@@ -1,0 +1,30 @@
+ShadowTraffic has been deployed as a Kubernetes Job.
+
+Release: {{ .Release.Name }}
+Namespace: {{ .Release.Namespace }}
+
+{{- if .Values.studio.enabled }}
+
+Studio is enabled. To access the Studio UI, run:
+
+  kubectl port-forward -n {{ .Release.Namespace }} job/{{ include "shadowtraffic.fullname" . }} {{ .Values.studio.port }}:{{ .Values.studio.port }}
+
+Then open: http://localhost:{{ .Values.studio.port }}
+
+Note: Studio requires --watch and --sample to be set.
+{{- end }}
+
+To view ShadowTraffic logs:
+
+  kubectl logs -n {{ .Release.Namespace }} -l "app.kubernetes.io/instance={{ .Release.Name }}" --follow
+
+Metrics are exposed on port {{ .Values.metrics.port }} at /metrics.
+
+{{- if not .Values.license.existingSecret }}
+{{- if not .Values.license.inline.id }}
+
+WARNING: No license configured. Set either:
+  - license.inline.edition, license.inline.id, license.inline.expiration, license.inline.signature
+  - license.existingSecret (reference a pre-existing Secret)
+{{- end }}
+{{- end }}

@@ -1,0 +1,18 @@
+apiVersion: v2
+name: shadowtraffic
+description: A Helm chart for ShadowTraffic — a synthetic data generator that streams data to Kafka, Postgres, S3, webhooks, and more.
+type: application
+version: 0.1.0
+appVersion: "latest"
+keywords:
+  - shadowtraffic
+  - synthetic-data
+  - data-generator
+  - kafka
+  - testing
+home: https://shadowtraffic.io
+sources:
+  - https://github.com/shadowtraffic/shadowtraffic
+maintainers:
+  - name: ShadowTraffic
+    url: https://shadowtraffic.io

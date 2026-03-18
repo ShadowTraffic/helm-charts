@@ -1,0 +1,100 @@
+image:
+  repository: shadowtraffic/shadowtraffic
+  pullPolicy: IfNotPresent
+  tag: ""  # defaults to .Chart.AppVersion ("latest")
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+podLabels: {}
+podSecurityContext: {}
+containerSecurityContext: {}
+
+# ---------------------------------------------------------------------------
+# Config — the ShadowTraffic configuration, potentially split across files
+# ---------------------------------------------------------------------------
+config:
+  # Inline files map — chart creates a ConfigMap. All files are mounted as a
+  # directory; loadJsonFile() references in the entrypoint just work.
+  files:
+    config.json: ""  # main config file content (JSON or YAML)
+    # customers.json: ""  # any additional files referenced via loadJsonFile
+  entrypoint: config.json  # the file passed to --config
+  mountPath: /home/files   # matches Docker: -v $(pwd)/files:/home/files
+
+  existingConfigMap: ""  # OR reference an existing ConfigMap (skips files/entrypoint)
+  configFormat: json     # --config-format: json or yaml
+
+# ---------------------------------------------------------------------------
+# License
+# ---------------------------------------------------------------------------
+license:
+  inline:
+    edition: ""
+    id: ""
+    email: ""
+    organization: ""
+    expiration: ""
+    signature: ""
+  existingSecret: ""  # OR reference an existing Secret
+
+# ---------------------------------------------------------------------------
+# Common CLI flags (first-class)
+# ---------------------------------------------------------------------------
+sample: ""    # --sample <n>: generate N events then stop
+seed: ""      # --seed <n>: repeatable runs
+watch: false  # --watch: reload config on changes
+stdout: false # --stdout: forward all output to stdout
+quiet: false  # --quiet: suppress status text
+
+# ---------------------------------------------------------------------------
+# Studio — web UI on port 8080 (requires --watch and --sample)
+# ---------------------------------------------------------------------------
+studio:
+  enabled: false
+  port: 8080
+
+# ---------------------------------------------------------------------------
+# Metrics — Prometheus, always exposed
+# ---------------------------------------------------------------------------
+metrics:
+  port: 9400  # --metrics-port (always passed explicitly)
+  podAnnotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "9400"
+    prometheus.io/path: "/metrics"
+
+# ---------------------------------------------------------------------------
+# Service
+# ---------------------------------------------------------------------------
+service:
+  type: ClusterIP
+  metricsPort: 9400
+  studioPort: 8080
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
+
+# ---------------------------------------------------------------------------
+# Job settings
+# ---------------------------------------------------------------------------
+job:
+  backoffLimit: 0        # don't retry on crash — failure is deterministic
+  ttlSecondsAfterFinished: ""  # optional: auto-cleanup after completion
+
+# ---------------------------------------------------------------------------
+# Escape hatches
+# ---------------------------------------------------------------------------
+extraArgs: []          # appended to args: --action, --reload, --report-benchmark, etc.
+extraEnv: []
+extraVolumeMounts: []
+extraVolumes: []
