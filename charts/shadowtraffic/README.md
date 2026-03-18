@@ -8,7 +8,7 @@ Runs [ShadowTraffic](https://shadowtraffic.io) as a Kubernetes `Job`. ShadowTraf
 
 - Kubernetes 1.21+
 - Helm 3.0+
-- A ShadowTraffic license ([free tier available](https://shadowtraffic.io/pricing.html))
+- A ShadowTraffic license
 
 ## Installing the Chart
 
@@ -22,10 +22,9 @@ config:
       {
         "generators": [
           {
-            "topic": "orders",
+            "topic": "sandbox",
             "value": {
-              "orderId": { "_gen": "uuid" },
-              "amount":  { "_gen": "number", "min": 1, "max": 1000 }
+              "orderId": { "_gen": "uuid" }
             }
           }
         ],
@@ -33,7 +32,9 @@ config:
           "kafka": {
             "kind": "kafka",
             "producerConfigs": {
-              "bootstrap.servers": "my-kafka:9092"
+              "bootstrap.servers": "my-kafka:9092",
+              "key.serializer" : "io.shadowtraffic.kafka.serdes.JsonSerializer",
+              "value.serializer" : "io.shadowtraffic.kafka.serdes.JsonSerializer"
             }
           }
         }
@@ -103,7 +104,7 @@ set -a && source license.env && set +a
 
 helm install my-release charts/shadowtraffic \
   --set config.existingConfigMap=st-config \
-  --set config.entrypoint=a.json \
+  --set config.entrypoint=root.json \
   --set config.mountPath=/home/mounted-configs \
   --set license.inline.edition="$LICENSE_EDITION" \
   --set license.inline.id="$LICENSE_ID" \
